@@ -6,6 +6,7 @@ use clap::{App, Arg};
 extern crate chariot_slp;
 
 extern crate png;
+use png::HasParameters;
 
 fn main() {
     let matches = App::new("png-to-slp")
@@ -22,7 +23,11 @@ fn main() {
 
     let png_path = matches.value_of("png-path").unwrap();
     let f = File::open(png_path).expect(&format!("Failed to open {}", &png_path));
-    let decoder = png::Decoder::new(f);
+
+    let mut decoder = png::Decoder::new(f);
+    // Do what is _expected_ instead of trying to be clever.
+    decoder.set(png::TRANSFORM_IDENTITY);
+
     let (info, mut reader) = decoder.read_info().expect("Failed to 'read_info' ???");
     let mut buf = vec![0; info.buffer_size()];
     reader.next_frame(&mut buf).expect("Failed to read frame");

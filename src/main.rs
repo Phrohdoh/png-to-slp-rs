@@ -47,6 +47,8 @@ fn main() {
         std::io::Cursor::new(raw_bytes)
     };
 
+    slp.header.write_to(&mut output).expect("Failed to write SlpHeader");
+
     for i in 0..slp.header.shape_count {
         let shape_header = chariot_slp::SlpShapeHeader {
             shape_data_offsets: 32 + 32 * slp.header.shape_count,

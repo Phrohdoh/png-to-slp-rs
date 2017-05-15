@@ -8,6 +8,15 @@ extern crate chariot_slp;
 extern crate png;
 use png::HasParameters;
 
+extern crate itertools;
+use itertools::Itertools;
+
+#[derive(Debug)]
+struct Run {
+    pub len: u8,
+    pub val: u8,
+}
+
 fn main() {
     let matches = App::new("png-to-slp")
         .version("0.1.0")
@@ -31,8 +40,22 @@ fn main() {
     let (info, mut reader) = decoder.read_info().expect("Failed to 'read_info' ???");
     assert_eq!(png::ColorType::Indexed, info.color_type);
 
-    let mut indexed_image_data_buf = vec![0; info.buffer_size()];
-    reader.next_frame(&mut indexed_image_data_buf).expect("Failed to read frame");
+    let mut rows_of_runs = Vec::new();
+
+    while let Ok(Some(bytes)) = reader.next_row() {
+        let mut runs = Vec::new();
+
+        for (val, group) in &bytes.into_iter().group_by(|idx| *idx) {
+            let len = group.into_iter().count() as u8;
+            let val = *val;
+            runs.push(Run { len, val });
+        }
+
+        rows_of_runs.push(runs);
+    }
+
+    println!("{:?}", rows_of_runs);
+    return;
 
     let mut slp_header = chariot_slp::SlpHeader::new();
     slp_header.file_version = *b"2.0N";

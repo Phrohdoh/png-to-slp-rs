@@ -4,6 +4,10 @@ name = "png-to-slp"
 version = "0.1.0"
 
 [dependencies]
-chariot_slp = "0.1"
+chariot_io_tools = "0.1"
 clap = "2.24"
 png = "0.7"
+
+[dependencies.chariot_slp]
+git = "https://github.com/ChariotEngine/Slp.git"
+branch = "feature/slp-writing"

@@ -114,6 +114,9 @@ fn main() {
             let is_last_run = run_idx == last_run_idx;
 
             // TODO: How do I correctly determine cmd_byte?
+            // cmd_byte must satisfy these conditions:
+            // * cmd_byte << 2 == run.len
+            // * cmd_byte & 0x0F == (0x00 || 0x04 || 0x08 || 0x0C)
             // For now we'll always use the `block copy` command.
             let cmd_byte = run.len << 2;
             output.write_u8(cmd_byte);
